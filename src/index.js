@@ -8,6 +8,7 @@ consign({
 })
 .include('libs/config.js')
 .then('db.js')
+.then('/passport')
 //.include('models/index.js')
 .then('libs/middlewares.js')
 .then('routes')

@@ -1,0 +1,33 @@
+<%- layout('layout/main.ejs') %>
+
+<h1 class="mt-4">Dashboard</h1>
+
+<div class="card mt-4">
+    <div class="card-header text-center">
+        <h3>Estadísticas</h3>
+    </div>
+    <div class="card-body">
+        
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header text-center">
+        <h3>Fichas</h3>
+    </div>
+    <div class="card-body">
+        <form action="/fichasTest" method="POST">
+            <div class="col-auto">
+              <label for="fichas" class="visually-hidden">Password</label>
+              <textarea rows="5" spellcheck="false" class="form-control" name="fichas" id="fichas" placeholder="Inserte las lineas de comandos de fichas"></textarea>
+            </div>
+            <div class="col-auto">
+                <div class="d-grid mt-2 gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary me-md">
+                        <i class="bi bi-plus-circle"></i>  Aceptar
+                    </button>
+                </div>
+            </div>
+          </form>
+    </div>
+</div>

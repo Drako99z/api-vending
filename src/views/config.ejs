@@ -1,0 +1,90 @@
+<%- layout('layout/main.ejs') %>
+
+    <h1 class="mt-4">Configuración</h1>
+
+    <div class="card mt-4">
+        <div class="card-header text-center">
+            <h3>Perfil</h3>
+        </div>
+        <div class="card-body">
+            <form action="/change-user" method="POST">
+                <div class="form-group">
+                    <label for="user" class="form-label">Cambiar nombre de usuario: </label>
+                    <input type="email" name="user" class="form-control mt-2" value="<%= user.user %>">
+                </div>
+                <div class="d-grid mt-4 gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary me-md">
+                        <i class="bi bi-save"></i>  Guardar Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header text-center">
+            <h3>Seguridad</h3>
+        </div>
+        <div class="card-body">
+            <form action="/change-password" method="POST">
+                <div class="form-group">
+                    <label for="password" class="form-label mt-2">Contraseña Actual: </label>
+                    <input type="password" name="password" class="form-control mt-2">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword" class="form-label mt-2">Nueva contraseña: </label>
+                    <input type="password" name="newPassword" class="form-control mt-2">
+                </div>
+                <div class="form-group">
+                    <label for="newPasswordConfirm" class="form-label mt-2">Confirmar nueva contraseña: </label>
+                    <input type="password" name="newPasswordConfirm" class="form-control mt-2">
+                </div>
+                <div class="d-grid mt-4 gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary me-md">
+                        <i class="bi bi-key"></i>  Cambiar Contraseña
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header text-center">
+            <h3>Conexión</h3>
+        </div>
+        <div class="card-body">
+            <form action="/addKey" method="POST">
+                <div class="d-grid mt-2 gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary me-md">
+                        <i class="bi bi-plus-circle"></i>  Generar Nueva Api
+                    </button>
+                </div>
+            </form>
+            <table class="table table-hover table-responsive">
+                <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Key</th>
+                      <th scope="col">Estatus</th>
+                      <th scope="col">Fecha de Creación</th>
+                      <th scope="col">Última Modificación</th>
+                      <th scope="col">Cambiar Estatus</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%results.forEach((key) => {%>
+                        <tr>
+                        <th scope="row"><%= key.id %></th>
+                        <td><%= key.key %></td>
+                        <td><%= (key.status)? "Activada" : "Desactivada" %></td>
+                        <td><%= key.createdAt %></td>
+                        <td><%= key.updatedAt %></td>
+                        <td>
+                            <a href="/change-status/<%= key.id %>" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
+                        </td>
+                        </tr>
+                    <%});%>
+                  </tbody>
+            </table>
+        </div>
+    </div>

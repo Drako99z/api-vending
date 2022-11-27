@@ -12,9 +12,31 @@ module.exports = (sequelize, DataType) => {
                 notEmpty: true
             }
         },
-        comando: {
+        user: {
             type: DataType.STRING,
             allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
+        password: {
+            type: DataType.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
+        time: {
+            type: DataType.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
+        status: {
+            type: DataType.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
             validate: {
                 notEmpty: true
             }

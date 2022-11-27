@@ -1,3 +1,5 @@
+import bycrypt from 'bcrypt-nodejs';
+
 module.exports = (sequelize, DataType) => {
     const manager = sequelize.define('Manager', {
         id: {
@@ -19,12 +21,16 @@ module.exports = (sequelize, DataType) => {
             validate: {
                 notEmpty: true
             }
-        },
-        token: {
-            type: DataType.STRING,
-            allowNull: true
         }
     });
+
+    manager.prototype.validPassword = function(password) {
+        return bycrypt.compareSync(password, this.password);
+    };
+
+    manager.encryptPassword = (password) =>{
+        return bycrypt.hashSync(password, bycrypt.genSaltSync(10));
+    }
 
     return manager;
 }
