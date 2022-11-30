@@ -1,6 +1,5 @@
 module.exports = app => {
-    const Keys = app.db.models.ApiKey;
-    const random = require('string-random');
+    const Perfiles = app.db.models.Perfil;
 
     //Continua si esta autenticado
     function isAuthenticated(req, res, next) {
@@ -10,12 +9,11 @@ module.exports = app => {
         res.redirect('/');
     };
 
-    app.route('/addKey')
+    app.route('/addProfile')
         .post(isAuthenticated, (req, res) => {
-            var key = random(18);
-            Keys.create({ "key": key })
+            Perfiles.create(req.body)
                 .then(result => {
-                    req.flash('configMessage', 'Key generada exitosamente');
+                    req.flash('configMessage', 'Perfil guardado exitosamente');
                     res.redirect('/config');
                 })
                 .catch(error => {
@@ -24,14 +22,14 @@ module.exports = app => {
                 });
         });
 
-    app.route('/change-key-status/:id')
+    app.route('/change-profile-status/:id')
         .get(isAuthenticated, (req, res) => {
-            Keys.findOne({ where: req.params })
+            Perfiles.findOne({ where: req.params })
                 .then(result => {
                     if (result) {
-                        Keys.update({ status: !result.status }, { where: req.params })
+                        Perfiles.update({ status: !result.status }, { where: req.params })
                             .then(result => {
-                                req.flash('configMessage', 'Key actualizada exitosamente');
+                                req.flash('configMessage', 'Perfil actualizado exitosamente');
                                 res.redirect('/config');
                             })
                             .catch(error => {

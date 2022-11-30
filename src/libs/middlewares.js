@@ -32,6 +32,8 @@ module.exports = app => {
         app.locals.signinMessage = req.flash('signinMessage');
         app.locals.configErrorMessage = req.flash('configErrorMessage');
         app.locals.configMessage = req.flash('configMessage');
+        app.locals.dashboardMessage = req.flash('dashboardMessage');
+        app.locals.dashboardErrorMessage = req.flash('dashboardErrorMessage');
         app.locals.user = req.user;
         next();
     });

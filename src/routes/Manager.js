@@ -1,6 +1,8 @@
 module.exports = app => {
-    const passport = require('passport');
     const Manager = app.db.models.Manager;
+    const Ficha = app.db.models.Ficha;
+    const Perfiles = app.db.models.Perfil;
+    const Keys = app.db.models.ApiKey;
 
     //Continua si esta autenticado
     function isAuthenticated(req, res, next) {
@@ -67,23 +69,195 @@ module.exports = app => {
             }
         });
 
-    //Pagina dashboard
-    app.route('/dashboard')
-        .get(isAuthenticated, (req, res, next) => {
-            res.render('dashboard');
-        });
-
     //Pagina de configuracion
     app.route('/config')
-        .get(isAuthenticated, (req, res, next) => {
-            const Keys = app.db.models.ApiKey;
-            Keys.findAll()
-                .then(result => res.render('config', { results: result }))
-                .catch(error => {
-                    res.status(412).json({ msg: error.message });
-                });
+        .get(isAuthenticated, async (req, res, next) => {
+            try {
+                let keys = await Keys.findAll();
+                let profiles = await Perfiles.findAll({ order: [['price', 'ASC']] });
+                res.render('config', { keys: keys, profiles: profiles });
+            } catch (error) {
+                res.status(412).json({ msg: error.message });
+            }
         });
 
+    //Pagina dashboard
+    app.route('/dashboard')
+        .get(isAuthenticated, async (req, res, next) => {
+            try {
+
+                //Obtener Parametros
+                let page = (isEmptyOrNull(req.query.page) || isNaN(req.query.page)) ? 1 : Number(req.query.page);
+                let status = (isEmptyOrNull(req.query.status) || isNaN(req.query.status)) ? 1 : Number(req.query.status);
+                let profile = (isEmptyOrNull(req.query.profile)) ? "all" : req.query.profile;
+
+                //Obtener clausulas where
+                let whereFicha = getWhereFichas(status);
+                let whereProfile = getWhereProfiles(profile);
+
+                let urlPages = "?status=" + encodeURIComponent(status) + "&profile=" + encodeURIComponent(profile) + "&page=";
+
+                //Parametros de paginacion
+                const resultsPerPage = 20;
+                let numberOfResults = await Ficha.count({
+                    where: whereFicha,
+                    include: [{
+                        model: Perfiles,
+                        where: whereProfile
+                    }]
+                });
+                const numberOfPages = Math.ceil(numberOfResults / resultsPerPage);
+                if (page > numberOfPages) {
+                    page = numberOfPages;
+                } else if (page < 1) {
+                    page = 1;
+                }
+
+                //Determinar el limite inicial de SQL
+                const startingLimit = (page - 1) * resultsPerPage;
+                //Obtener el numero de registros para la pagina inicial
+                let fichas = await Ficha.findAll({
+                    where: whereFicha,
+                    offset: startingLimit, limit: resultsPerPage,
+                    include: [{
+                        model: Perfiles,
+                        where: whereProfile
+                    }]
+                });
+                let iterator = (page - 5) < 1 ? 1 : page - 5;
+                let endingLink = (iterator + 9) <= numberOfPages ? (iterator + 9) : page + (numberOfPages - page);
+                if (endingLink < (page + 4) && page >= 10) {
+                    iterator -= (page + 4) - numberOfPages;
+                }
+
+                //Obtener Estadisticas
+                let estadisticas = await getEstadisticasFichas();
+
+                //Obtener Perfiles para el filtrado
+                let perfiles = await Perfiles.findAll({ where: { status: 1 } });
+
+                //Mostrar pagina
+                res.render('dashboard', {
+                    fichas: fichas,
+                    estadisticas: estadisticas,
+                    data: {
+                        page,
+                        iterator,
+                        endingLink,
+                        numberOfPages,
+                        urlPages,
+                        profile,
+                        status,
+                        perfiles
+                    }
+                });
+            } catch (error) {
+                res.status(412).json({ msg: error.message });
+            }
+        });
+
+    function isEmptyOrNull(string) {
+        if (string == null) {
+            return true;
+        } else if (string == "") {
+            return true;
+        }
+        return false;
+    }
+
+    function getWhereFichas(status) {
+        let whereFicha;
+        switch (status) {
+            case 0:     //Vendidas
+                whereFicha = {
+                    status: 0
+                }
+                break;
+            case 1:     //Disponibles
+                whereFicha = {
+                    status: 1
+                }
+                break;
+            case -1:    //Todas
+                whereFicha = null;
+                break;
+            default:    //Todas
+                whereFicha = null;
+                break;
+        }
+        return whereFicha;
+    }
+    function getWhereProfiles(profile) {
+        let whereProfile;
+        switch (profile) {
+            case "all":    //Todos
+                whereProfile = {
+                    status: 1
+                };
+                break;
+            default:    //El perfil recibido
+                whereProfile = {
+                    profile: profile,
+                    status: 1
+                };
+                break;
+        }
+        return whereProfile;
+    }
+
+    async function getEstadisticasFichas() {
+        let perfiles = await Perfiles.findAll({ where: { status: 1 }, order: [['price', 'ASC']] });
+        let estadisticas = {};
+
+        let estadisticaPerfil = [];
+        let disponiblesPerfil;
+        let vendidasPerfil;
+
+        let fichasTotal = 0;
+        let vendidasTotal = 0;
+        let disponiblesTotal = 0;
+        let masVendidaProfile = "No hay suficiente información de ventas";
+        let masVendidaAux = -1;
+
+        for (const i in perfiles) {
+            //Consultas
+            disponiblesPerfil = await Ficha.count({ where: { status: true, PerfilId: perfiles[i].id } });
+            vendidasPerfil = await Ficha.count({ where: { status: false, PerfilId: perfiles[i].id } });
+
+            //Objeto por perfil
+            let object = {
+                perfil: perfiles[i].profile,
+                precio: perfiles[i].price,
+                estadisticas: {
+                    disponibles: disponiblesPerfil,
+                    vendidas: vendidasPerfil,
+                    total: (disponiblesPerfil + vendidasPerfil)
+                }
+            };
+            estadisticaPerfil.push(object);
+
+            //Calculos de estadisticas
+            vendidasTotal += vendidasPerfil;
+            disponiblesTotal += disponiblesPerfil;
+
+            if (vendidasPerfil != 0) {
+                if (vendidasPerfil > masVendidaAux) {
+                    masVendidaAux = vendidasPerfil;
+                    masVendidaProfile = perfiles[i].profile;
+                }
+            }
+        }
+
+        fichasTotal = vendidasTotal + disponiblesTotal;
+        estadisticas = {
+            fichasTotal: fichasTotal,
+            vendidasTotal: vendidasTotal,
+            disponiblesTotal: disponiblesTotal,
+            masVendida: masVendidaProfile,
+            perfiles: estadisticaPerfil
+        };
+        return estadisticas;
+    }
 
 
     //Usar restriccion en varias rutas

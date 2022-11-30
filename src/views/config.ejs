@@ -50,21 +50,30 @@
 
     <div class="card mt-4">
         <div class="card-header text-center">
-            <h3>Conexión</h3>
+            <h3>Perfiles</h3>
         </div>
         <div class="card-body">
-            <form action="/addKey" method="POST">
-                <div class="d-grid mt-2 gap-2 d-md-flex justify-content-md-end">
-                    <button type="submit" class="btn btn-primary me-md">
-                        <i class="bi bi-plus-circle"></i>  Generar Nueva Api
-                    </button>
+            <form action="/addProfile" method="POST" class="row g-3">
+                <div class="col-md-4">
+                  <label for="profile" class="visually-hidden">Nombre del Perfil</label>
+                  <input type="text" class="form-control" id="profile" name="profile" placeholder="Nombre del Perfil">
                 </div>
-            </form>
-            <table class="table table-hover table-responsive">
+                <div class="col-md-4">
+                  <label for="price" class="visually-hidden">Precio</label>
+                  <input type="number" step=".10" class="form-control" id="price" name="price" placeholder="Precio">
+                </div>
+                <div class="col-md-4">
+                  <button type="submit" class="btn btn-primary mb-3 me-md">
+                    <i class="bi bi-plus-circle"></i>  Guardar Perfil
+                </button>
+                </div>
+              </form>
+            <table class="table table-hover table-responsive table-sm">
                 <thead>
                     <tr>
                       <th scope="col">#</th>
-                      <th scope="col">Key</th>
+                      <th scope="col">Nombre</th>
+                      <th scope="col">Precio ($)</th>
                       <th scope="col">Estatus</th>
                       <th scope="col">Fecha de Creación</th>
                       <th scope="col">Última Modificación</th>
@@ -72,7 +81,49 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <%results.forEach((key) => {%>
+                    <%profiles.forEach((perfil) => {%>
+                        <tr>
+                        <th scope="row"><%= perfil.id %></th>
+                        <td><%= perfil.profile %></td>
+                        <td><%= perfil.price %></td>
+                        <td><%= (perfil.status)? "Activado" : "Desactivado" %></td>
+                        <td><%= perfil.createdAt %></td>
+                        <td><%= perfil.updatedAt %></td>
+                        <td>
+                            <a href="/change-profile-status/<%= perfil.id %>" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
+                        </td>
+                        </tr>
+                    <%});%>
+                  </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header text-center">
+            <h3>Conexión</h3>
+        </div>
+        <div class="card-body">
+            <form action="/addKey" method="POST">
+                <div class="d-grid mt-2 gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary me-md">
+                        <i class="bi bi-plus-circle"></i>  Generar Nueva Api-Key
+                    </button>
+                </div>
+            </form>
+            <table class="table table-hover table-responsive table-sm">
+                <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Api-Key</th>
+                      <th scope="col">Estatus</th>
+                      <th scope="col">Fecha de Creación</th>
+                      <th scope="col">Última Modificación</th>
+                      <th scope="col">Cambiar Estatus</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%keys.forEach((key) => {%>
                         <tr>
                         <th scope="row"><%= key.id %></th>
                         <td><%= key.key %></td>
@@ -80,7 +131,7 @@
                         <td><%= key.createdAt %></td>
                         <td><%= key.updatedAt %></td>
                         <td>
-                            <a href="/change-status/<%= key.id %>" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
+                            <a href="/change-key-status/<%= key.id %>" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
                         </td>
                         </tr>
                     <%});%>

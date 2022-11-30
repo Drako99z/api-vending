@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 </head>
 
-<body class="bg-secondary">
+<body class="bg-secondary d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><i class="bi bi-router"></i> Maquina Vending</a>
@@ -49,31 +49,61 @@
 
     <div class="container">
 
+        <!-- Alertas de Inicio de Sesión -->
+
         <% if (signupMessage.length> 0) {%>
-            <div class="alert alert-danger">
-                <%= signupMessage%>
+            <div class="alert alert-dismissible alert-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>Error! </strong> <%= signupMessage%>
             </div>
         <%} %>
 
         <% if (signinMessage.length> 0) {%>
-            <div class="alert alert-danger">
-                <%= signinMessage%>
+            <div class="alert alert-dismissible alert-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>Error! </strong> <%= signinMessage%>
             </div>
         <%} %>
 
+        <!-- Alertas de Configuracion -->
+
         <% if (configErrorMessage.length> 0) {%>
-            <div class="alert alert-danger">
-                <%= configErrorMessage%>
+            <div class="alert alert-dismissible alert-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>Error! </strong> <%= configErrorMessage%>
             </div>
         <%} %>
 
         <% if (configMessage.length> 0) {%>
-            <div class="alert alert-success">
-                <%= configMessage%>
+            <div class="alert alert-dismissible alert-success">
+                <i class="bi bi-check-circle-fill"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>¡Bien hecho! </strong> <%= configMessage%>
             </div>
         <%} %>
 
-                        <%- body %>
+        <!-- Alertas de Dashboard -->
+
+        <% if (dashboardMessage.length> 0) {%>
+            <div class="alert alert-dismissible alert-success">
+                <i class="bi bi-check-circle-fill"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>¡Bien hecho! </strong> <%= dashboardMessage%>
+            </div>
+        <%} %>
+
+        <% if (dashboardErrorMessage.length> 0) {%>
+            <div class="alert alert-dismissible alert-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>Error! </strong> <%= dashboardErrorMessage%>
+            </div>
+        <%} %>
+
+        <%- body %>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
         integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
@@ -83,5 +113,12 @@
         crossorigin="anonymous"></script>
 
 </body>
+<div class="mt-5"></div>
+
+<footer class="bg-dark text-center text-white mt-auto">
+    <div class="text-center p-3">
+        © 2022 Copyright: Sistema de Administración para Máquina Vending de Fichas Hotspot
+    </div>
+</footer>
 
 </html>

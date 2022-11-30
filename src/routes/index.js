@@ -17,18 +17,18 @@ module.exports = app => {
 
     //Formulario de inicio de sesión --- Inserción de usuario administrador automática
     app.get('/', isNotAuthenticated, (req, res) => {
-        Manager.count()
+        Manager.count()                                           //Busca si hay usuarios registrados
             .then(result => {
-                if (result <= 0) {
+                if (result <= 0) {                               //Si no hay usuarios registrados inserta el usuario predefinido
                     Manager.create({
                         "user": ManagerProfile.user,
                         "password": Manager.encryptPassword(ManagerProfile.password)
                     })
                         .then(result => res.render('index'))
                         .catch(error => {
-                            console.log(error);
+                            res.status(412).json({ msg: error.message });
                         });
-                } else {
+                } else {                                        //Si no, continua al inicio de sesion
                     res.render('index');
                 }
             })

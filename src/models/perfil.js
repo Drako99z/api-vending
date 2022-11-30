@@ -1,14 +1,21 @@
 const moment = require("moment/moment");
 
 module.exports = (sequelize, DataType) => {
-    const key = sequelize.define('ApiKey', {
+    const perfil = sequelize.define('Perfil', {
         id: {
             type: DataType.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        key: {
+        profile: {
             type: DataType.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
+        price: {
+            type: DataType.DECIMAL,
             allowNull: false,
             validate: {
                 notEmpty: true
@@ -36,9 +43,9 @@ module.exports = (sequelize, DataType) => {
         }
     });
 
-    key.associate = (models) => {
-        //Sin Asociación
+    perfil.associate = (models) => {
+        perfil.hasMany(models.Ficha);
     };
 
-    return key;
+    return perfil;
 }

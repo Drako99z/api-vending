@@ -1,4 +1,5 @@
 import bycrypt from 'bcrypt-nodejs';
+const moment = require("moment/moment");
 
 module.exports = (sequelize, DataType) => {
     const manager = sequelize.define('Manager', {
@@ -21,6 +22,18 @@ module.exports = (sequelize, DataType) => {
             validate: {
                 notEmpty: true
             }
+        },
+        createdAt: {
+            type: DataType.DATE,
+            get() {
+                return moment(this.getDataValue('createdAt')).format('DD/MM/YYYY h:mm:ss a');
+            }
+        },
+        updatedAt: {
+            type: DataType.DATE,
+            get() {
+                return moment(this.getDataValue('updatedAt')).format('DD/MM/YYYY h:mm:ss a');
+            }
         }
     });
 
@@ -30,7 +43,11 @@ module.exports = (sequelize, DataType) => {
 
     manager.encryptPassword = (password) =>{
         return bycrypt.hashSync(password, bycrypt.genSaltSync(10));
-    }
+    };
+
+    manager.associate = (models) => {
+        //Sin Asociación
+    };
 
     return manager;
 }

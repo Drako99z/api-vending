@@ -1,90 +1,195 @@
 module.exports = app => {
     const Ficha = app.db.models.Ficha;
+    const Perfiles = app.db.models.Perfil;
+    const Keys = app.db.models.ApiKey;
+
+    //Continua si esta autenticado
+    function isAuthenticated(req, res, next) {
+        if (req.isAuthenticated()) {
+            return next();
+        }
+        res.redirect('/');
+    };
 
     app.route('/fichas')
-        .get((req, res) => {
-            Ficha.findAll()
-                .then(result => res.json(result))
-                .catch(error => {
-                    res.status(412).json({ msg: error.message });
-                });
-        })
-        .post((req, res) => {
-            let cadenas = req.body.fichas;
-            cadenas = cadenas.split('\n');
-            var fichas = [];
-            cadenas.forEach(ficha => {
-                fichas.push(fichaToObject(ficha));
-            });
+        .post(isAuthenticated, async (req, res) => {
+            if (req.body.fichas != "") {
+                try {
+                    //Transformando las cadenas de comandos en fichas
+                    let perfilesGuardados = await Perfiles.findAll();
+                    let cadenas = req.body.fichas;
+                    let ficha;
+                    cadenas = cadenas.split('\n');
 
-            res.json(fichas);
+                    for (const i in cadenas) {
+                        ficha = fichaToObject(cadenas[i]);       //Convertir ficha en objeto
+                        if (ficha != null) {
+                            for (const j in perfilesGuardados) {
+                                if (perfilesGuardados[j].profile.includes(ficha.perfil)) {          //si esta presente el perfil encontrado
+                                    let fichaGuardada = await Ficha.create(ficha);                  //Se crea el registro de la ficha
+                                    fichaGuardada.setPerfil(perfilesGuardados[j]);                  //Se asigna la ficha a su perfil
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    req.flash('dashboardMessage', 'Fichas agregadas exitosamente');
+                    res.redirect('/dashboard');
+
+                } catch (error) {
+                    req.flash('dashboardErrorMessage', 'Ha ocurrido un error en el servidor: ' + error.message);
+                    res.redirect('/dashboard');
+                }
+            } else {
+                req.flash('dashboardErrorMessage', 'Uno o más campos se encuentran vacíos');
+                res.redirect('/dashboard');
+            }
         });
 
+    //Metodo que transforma cadena de ficha en un objeto
     function fichaToObject(cadena) {
-        //limpiar cadena
-        let ficha = cadena
-            .replaceAll(/\s{0,}add\s{0,}/g, '')         //quitar el add del inicio
-            .replaceAll(/\s{0,}=\s{0,}/g, '=')          //quitar igual con espacios
-            .replaceAll(/\s{0,}comment=".{0,}"/g, '')   //quitar comentario
-            .replaceAll(/"/g, '').trim();               //quitar comillas
+        let fichaObject = null;
+        if (cadena.includes("name=") && cadena.includes("password=") && cadena.includes("profile=") && cadena.includes("limit-uptime=")) {
+            //limpiar cadena
+            let ficha = cadena
+                .replaceAll(/\s{0,}add\s{0,}/g, '')         //quitar el add del inicio
+                .replaceAll(/\s{0,}=\s{0,}/g, '=')          //quitar igual con espacios
+                .replaceAll(/\s{0,}comment=".{0,}"/g, '')   //quitar comentario
+                .replaceAll(/"/g, '').trim();               //quitar comillas
 
-        //dividir en propiedades
-        let propiedades = ficha.split(' ');
-        let fichaObject = {};
-        propiedades.forEach(prop => {
-            if (prop.includes("name=")) {
-                fichaObject.name = prop.replaceAll("name=", "").trim();
-            }
-            if (prop.includes("password=")) {
-                fichaObject.password = prop.replaceAll("password=", "").trim();
-            }
-            if (prop.includes("profile=")) {
-                fichaObject.profile = prop.replaceAll("profile=", "").trim();
-            }
-            if (prop.includes("limit-uptime=")) {
-                fichaObject.time = prop.replaceAll("limit-uptime=", "").trim();
-            }
-        });
+            //dividir en propiedades
+            let propiedades = ficha.split(' ');
+            fichaObject = {};
+            propiedades.forEach(prop => {
+                if (prop.includes("name=")) {
+                    fichaObject.user = prop.replaceAll("name=", "").trim();
+                }
+                if (prop.includes("password=")) {
+                    fichaObject.password = prop.replaceAll("password=", "").trim();
+                }
+                if (prop.includes("profile=")) {
+                    fichaObject.perfil = prop.replaceAll("profile=", "").trim();
+                }
+                if (prop.includes("limit-uptime=")) {
+                    fichaObject.time = prop.replaceAll("limit-uptime=", "").trim();
+                }
+            });
+        }
         return fichaObject;
     }
 
-    app.route('/oneFicha')
-        .get((req, res) => {
-            Ficha.findAll()
-                .then(result => res.json(result))
-                .catch(error => {
-                    res.status(412).json({ msg: error.message });
-                });
-        })
-        .post((req, res) => {
-            Ficha.create(req.body)
-                .then(result => res.json(result))
-                .catch(error => {
-                    res.status(412).json({ msg: error.message });
-                });
+
+    //Maquina Vending Metodos
+    app.route('/vending')
+        .post(isAutorized, async (req, res, next) => {
+            try {
+                res.status(200).json({ estatus: "Correcto", result: await getDisponiblesPerfil() });
+            } catch (error) {
+                res.status(412).json({ estatus: "Error", msg: error.message });
+            }
         });
 
-    app.route('/fichas/:id')
-        .get((req, res) => {
-            Ficha.findOne({ where: req.params })
-                .then(result => res.json(result))
-                .catch(error => {
-                    res.status(412).json({ msg: error.message });
-                });
-        })
-        .put((req, res) => {
-            Ficha.update(req.body, { where: req.params })
-                .then(result => res.sendStatus(204))
-                .catch(error => {
-                    res.status(412).json({ msg: error.message });
-                });
-        })
-        .delete((req, res) => {
-            Ficha.destroy({ where: req.params })
-                .then(result => res.sendStatus(204))
-                .catch(error => {
-                    res.status(412).json({ msg: error.message });
-                });
+    async function getDisponiblesPerfil() {
+        let perfiles = await Perfiles.findAll({ where: { status: 1 }, order: [['price', 'ASC']] });
+        let disponiblesPerfil;
+        let disponibles = [];
+        for (const i in perfiles) {
+            disponiblesPerfil = await Ficha.count({ where: { status: true, PerfilId: perfiles[i].id } });
+            disponibles.push({ perfil: perfiles[i].profile, precio: perfiles[i].price, disponibles: disponiblesPerfil });
+        }
+        return disponibles;
+    }
+
+    app.route('/vending/:price')
+        .post(isAutorized, async (req, res, next) => {
+            try {
+                res.status(200).json({ estatus: "Correcto", result: await getFichaAndDisabled(req.params.price) });
+            } catch (error) {
+                res.status(412).json({ estatus: "Error", msg: error.message });
+            }
         });
+
+    async function getFichaAndDisabled(price) {
+        let ficha = await Ficha.findOne({
+            where: { status: 1 },
+            include: [{
+                model: Perfiles,
+                where: { status: 1, price: price }
+            }]
+        });
+        let object;
+        if (ficha != null) {
+            object = { user: ficha.user, password: ficha.password, precio: ficha.Perfil.price }; //Obtener Fciha
+            Ficha.update({ status: 0 }, { where: { id: ficha.id } })   //Descativarla
+        } else {
+            object = { msg: "Ninguna ficha encontrada" };
+        }
+        return object;
+    }
+
+    //Continua si el token api esta autorizado
+    async function isAutorized(req, res, next) {
+        if (req.body.key != null) {
+            if (req.body.key != "") {
+                try {
+                    let api = await Keys.findOne({ where: { key: req.body.key, status: 1 } })
+                    if (api) {
+                        return next();
+                    } else {
+                        res.status(401).json({ estatus: "Error", msg: "No autorizado" });
+                    }
+                } catch (error) {
+                    res.status(412).json({ estatus: "Error", msg: error.message });
+                }
+            } else {
+                res.status(400).json({ estatus: "Error", msg: "Datos enviados de forma incorrecta" });
+            }
+        } else {
+            res.status(400).json({ estatus: "Error", msg: "Datos enviados de forma incorrecta" });
+        }
+    };
+
+
+    //Metodos Testing no utilizables
+
+    // app.route('/oneFicha')
+    //     .get((req, res) => {
+    //         Ficha.findAll()
+    //             .then(result => res.json(result))
+    //             .catch(error => {
+    //                 res.status(412).json({ msg: error.message });
+    //             });
+    //     })
+    //     .post((req, res) => {
+    //         Ficha.create(req.body)
+    //             .then(result => res.json(result))
+    //             .catch(error => {
+    //                 res.status(412).json({ msg: error.message });
+    //             });
+    //     });
+
+    // app.route('/fichas/:id')
+    //     .get((req, res) => {
+    //         Ficha.findOne({ where: req.params })
+    //             .then(result => res.json(result))
+    //             .catch(error => {
+    //                 res.status(412).json({ msg: error.message });
+    //             });
+    //     })
+    //     .put((req, res) => {
+    //         Ficha.update(req.body, { where: req.params })
+    //             .then(result => res.sendStatus(204))
+    //             .catch(error => {
+    //                 res.status(412).json({ msg: error.message });
+    //             });
+    //     })
+    //     .delete((req, res) => {
+    //         Ficha.destroy({ where: req.params })
+    //             .then(result => res.sendStatus(204))
+    //             .catch(error => {
+    //                 res.status(412).json({ msg: error.message });
+    //             });
+    //     });
 
 };
