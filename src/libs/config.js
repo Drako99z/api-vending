@@ -4,7 +4,7 @@ module.exports = {
     password: '',
     params:{
         dialect: 'sqlite',
-        storage: 'vendingHotspot.js',
+        storage: 'vendingHotspot.db',
         define: {
             underscore: true
         },
