@@ -53,26 +53,26 @@ module.exports = app => {
         if (cadena.includes("name=") && cadena.includes("password=") && cadena.includes("profile=") && cadena.includes("limit-uptime=")) {
             //limpiar cadena
             let ficha = cadena
-                .replace(/\s{0,}add\s{0,}/g, '')         //quitar el add del inicio
-                .replace(/\s{0,}=\s{0,}/g, '=')          //quitar igual con espacios
-                .replace(/\s{0,}comment=".{0,}"/g, '')   //quitar comentario
-                .replace(/"/g, '').trim();               //quitar comillas
+                .replaceAll(/\s{0,}add\s{0,}/g, '')         //quitar el add del inicio
+                .replaceAll(/\s{0,}=\s{0,}/g, '=')          //quitar igual con espacios
+                .replaceAll(/\s{0,}comment=".{0,}"/g, '')   //quitar comentario
+                .replaceAll(/"/g, '').trim();               //quitar comillas
 
             //dividir en propiedades
             let propiedades = ficha.split(' ');
             fichaObject = {};
             propiedades.forEach(prop => {
                 if (prop.includes("name=")) {
-                    fichaObject.user = prop.replace("name=", "").trim();
+                    fichaObject.user = prop.replaceAll("name=", "").trim();
                 }
                 if (prop.includes("password=")) {
-                    fichaObject.password = prop.replace("password=", "").trim();
+                    fichaObject.password = prop.replaceAll("password=", "").trim();
                 }
                 if (prop.includes("profile=")) {
-                    fichaObject.perfil = prop.replace("profile=", "").trim();
+                    fichaObject.perfil = prop.replaceAll("profile=", "").trim();
                 }
                 if (prop.includes("limit-uptime=")) {
-                    fichaObject.time = prop.replace("limit-uptime=", "").trim();
+                    fichaObject.time = prop.replaceAll("limit-uptime=", "").trim();
                 }
             });
         }

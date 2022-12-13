@@ -1,10 +1,11 @@
 module.exports = {
-    database: 'apivending',
-    username: 'apivending',
-    password: 'vending',
+    database: 'bd_apivending',
+    username: 'api_vending',
+    password: 'vendingapi',
     params:{
         dialect: 'mysql',
-        host: 'mysql.webcindario.com',
+        host: 'db4free.net',
+        port: '3306',
         define: {
             underscore: true
         },

@@ -114,7 +114,8 @@ module.exports = app => {
                 }
 
                 //Determinar el limite inicial de SQL
-                const startingLimit = (page - 1) * resultsPerPage;
+                let startingLimit = (page - 1) * resultsPerPage;
+                if(startingLimit < 0) startingLimit = 0;
                 //Obtener el numero de registros para la pagina inicial
                 let fichas = await Ficha.findAll({
                     where: whereFicha,
