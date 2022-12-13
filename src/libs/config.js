@@ -4,7 +4,7 @@ module.exports = {
     password: 'vending',
     params:{
         dialect: 'mysql',
-        host: '	mysql.webcindario.com',
+        host: 'mysql.webcindario.com',
         define: {
             underscore: true
         },
