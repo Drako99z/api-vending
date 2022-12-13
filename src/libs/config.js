@@ -1,10 +1,10 @@
 module.exports = {
-    database: 'vendingHotspot',
-    username: '',
-    password: '',
+    database: 'apivending',
+    username: 'apivending',
+    password: 'vending',
     params:{
-        dialect: 'sqlite',
-        storage: 'vendingHotspot.db',
+        dialect: 'mysql',
+        host: '	mysql.webcindario.com',
         define: {
             underscore: true
         },
