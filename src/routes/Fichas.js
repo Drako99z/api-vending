@@ -1,4 +1,5 @@
 module.exports = app => {
+    var moment = require('moment');
     const Ficha = app.db.models.Ficha;
     const Perfiles = app.db.models.Perfil;
     const Keys = app.db.models.ApiKey;
@@ -78,6 +79,63 @@ module.exports = app => {
         }
         return fichaObject;
     }
+
+    app.route('/clearHistory')
+        .post(isAuthenticated, async (req, res) => {
+            if (req.body.fichas != "") {
+                try {
+                    const { Op } = require("sequelize");
+                    let range = req.body.range;
+                    let date;
+                    let where;
+                    switch (range) {
+                        case "1Year":
+                            date = moment().subtract(1, 'year');
+                            break;
+                        case "6Months":
+                            date = moment().subtract(6, 'month');
+                            break;
+                        case "3Months":
+                            date = moment().subtract(3, 'month');
+                            break;
+                        case "1Month":
+                            date = moment().subtract(1, 'month');
+                            break;
+                    }
+                    if (range != "all") {
+                        where = {
+                            where: {
+                                status: 0,
+                                updatedAt: {
+                                    [Op.lte]: date
+                                }
+                            }
+                        };
+                    } else {
+                        where = {
+                            where: {
+                                status: 0
+                            }
+                        };
+                    }
+                    let eliminadas =  await Ficha.destroy(where);
+
+                    if (range != "all") {
+                        req.flash('configMessage', eliminadas + ' Fichas vendidas antes del ' + date.format('DD/MM/YYYY') + ' eliminadas exitosamente');
+                    } else {
+                        req.flash('configMessage', eliminadas + ' Fichas vendidas eliminadas exitosamente');
+                    }
+                    res.redirect('/config');
+
+                } catch (error) {
+                    req.flash('configErrorMessage', 'Ha ocurrido un error en el servidor: ' + error.message);
+                    res.redirect('/config');
+                }
+            } else {
+                req.flash('configErrorMessage', 'Uno o más campos se encuentran vacíos');
+                res.redirect('/config');
+            }
+        });
 
 
     //Maquina Vending Metodos
