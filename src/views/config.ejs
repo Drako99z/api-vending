@@ -68,34 +68,36 @@
                 </button>
                 </div>
               </form>
-            <table class="table table-hover table-responsive table-sm">
-                <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Nombre</th>
-                      <th scope="col">Precio ($)</th>
-                      <th scope="col">Estatus</th>
-                      <th scope="col">Fecha de Creación</th>
-                      <th scope="col">Última Modificación</th>
-                      <th scope="col">Cambiar Estatus</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <%profiles.forEach((perfil) => {%>
+              <div class="table-responsive">
+                <table class="table table-hover table-responsive table-sm">
+                    <thead>
                         <tr>
-                        <th scope="row"><%= perfil.id %></th>
-                        <td><%= perfil.profile %></td>
-                        <td><%= perfil.price %></td>
-                        <td><%= (perfil.status)? "Activado" : "Desactivado" %></td>
-                        <td><%= perfil.createdAt %></td>
-                        <td><%= perfil.updatedAt %></td>
-                        <td>
-                            <a href="/change-profile-status/<%= perfil.id %>" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
-                        </td>
+                          <th scope="col">#</th>
+                          <th scope="col">Nombre</th>
+                          <th scope="col">Precio ($)</th>
+                          <th scope="col">Estatus</th>
+                          <th scope="col">Fecha de Creación</th>
+                          <th scope="col">Última Modificación</th>
+                          <th scope="col">Cambiar Estatus</th>
                         </tr>
-                    <%});%>
-                  </tbody>
-            </table>
+                      </thead>
+                      <tbody>
+                        <%profiles.forEach((perfil) => {%>
+                            <tr>
+                            <th scope="row"><%= perfil.id %></th>
+                            <td><%= perfil.profile %></td>
+                            <td><%= perfil.price %></td>
+                            <td><%= (perfil.status)? "Activado" : "Desactivado" %></td>
+                            <td><%= perfil.createdAt %></td>
+                            <td><%= perfil.updatedAt %></td>
+                            <td>
+                                <a href="/change-profile-status/<%= perfil.id %>" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
+                            </td>
+                            </tr>
+                        <%});%>
+                      </tbody>
+                </table>
+              </div>
         </div>
     </div>
 
@@ -111,31 +113,57 @@
                     </button>
                 </div>
             </form>
-            <table class="table table-hover table-responsive table-sm">
-                <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Api-Key</th>
-                      <th scope="col">Estatus</th>
-                      <th scope="col">Fecha de Creación</th>
-                      <th scope="col">Última Modificación</th>
-                      <th scope="col">Cambiar Estatus</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <%keys.forEach((key) => {%>
+            <div class="table-responsive">
+                <table class="table table-hover table-responsive table-sm">
+                    <thead>
                         <tr>
-                        <th scope="row"><%= key.id %></th>
-                        <td><%= key.key %></td>
-                        <td><%= (key.status)? "Activada" : "Desactivada" %></td>
-                        <td><%= key.createdAt %></td>
-                        <td><%= key.updatedAt %></td>
-                        <td>
-                            <a href="/change-key-status/<%= key.id %>" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
-                        </td>
+                          <th scope="col">#</th>
+                          <th scope="col">Api-Key</th>
+                          <th scope="col">Estatus</th>
+                          <th scope="col">Fecha de Creación</th>
+                          <th scope="col">Última Modificación</th>
+                          <th scope="col">Cambiar Estatus</th>
                         </tr>
-                    <%});%>
-                  </tbody>
-            </table>
+                      </thead>
+                      <tbody>
+                        <%keys.forEach((key) => {%>
+                            <tr>
+                            <th scope="row"><%= key.id %></th>
+                            <td><%= key.key %></td>
+                            <td><%= (key.status)? "Activada" : "Desactivada" %></td>
+                            <td><%= key.createdAt %></td>
+                            <td><%= key.updatedAt %></td>
+                            <td>
+                                <a href="/change-key-status/<%= key.id %>" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
+                            </td>
+                            </tr>
+                        <%});%>
+                      </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header text-center">
+            <h3>Limpiar Historial</h3>
+        </div>
+        <div class="card-body">
+            <form action="/clearHistory" method="POST" class="row g-3">
+                <div class="col-md-4">
+                    <select class="form-select" aria-label="Default select example" name="range">
+                        <option selected value="1Year">Mayor a un año</option>
+                        <option value="6Months">Mayor a 6 meses</option>
+                        <option value="3Months">Mayor a 3 meses</option>
+                        <option value="1Month">Mayor a un mes</option>
+                        <option value="all">Todas las vendidas</option>
+                      </select>
+                </div>
+                <div class="col-md-4">
+                  <button type="submit" class="btn btn-danger mb-3 me-md">
+                    <i class="bi bi-trash"></i>  Eliminar Fichas Vendidas
+                </button>
+                </div>
+              </form>
         </div>
     </div>
