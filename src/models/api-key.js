@@ -7,9 +7,18 @@ module.exports = (sequelize, DataType) => {
             primaryKey: true,
             autoIncrement: true
         },
+        name: {
+            type: DataType.STRING,
+            allowNull: true,
+            unique: true,
+            validate: {
+                notEmpty: true
+            }
+        },
         key: {
             type: DataType.STRING,
             allowNull: false,
+            unique: true,
             validate: {
                 notEmpty: true
             }
@@ -37,7 +46,7 @@ module.exports = (sequelize, DataType) => {
     });
 
     key.associate = (models) => {
-        //Sin Asociación
+        key.hasMany(models.Ficha, { onDelete: 'cascade' });
     };
 
     return key;

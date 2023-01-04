@@ -1,0 +1,32 @@
+<%- layout('layout/main.ejs') %>
+
+    <h1 class="mt-4">Editar Máquina Vending</h1>
+
+    <div class="card mt-4">
+        <div class="card-header text-center">
+            <h3>Editar <%= vending.name %>
+            </h3>
+        </div>
+        <div class="card-body">
+            <form action="/edit-vending/<%= vending.id %>" method="POST">
+                <div class="form-group">
+                    <label for="name" class="form-label mt-2">Cambiar nombre de la máquina vending: </label>
+                    <input type="text" name="name" class="form-control mt-2" value="<%= vending.name %>">
+                </div>
+                <div class="form-group">
+                    <label for="key" class="form-label mt-2">Cambiar la clave de acceso</label>
+                    <input type="text" class="form-control mt-2" name="key" value="<%= vending.key %>">
+                </div>
+                <div class="form-check form-switch mt-4">
+                    <input class="form-check-input rounded-pill" type="checkbox" name="status" id="status" value="true" <%= (vending.status) ? "checked" : "" %>>
+                    <label class="form-check-label" for="status">Activar o Desactivar máquina vending</label>
+                </div>
+                <div class="d-grid mt-4 gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary me-md" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="Guardar los cambios en la máquina vending">
+                        <i class="bi bi-save"></i> Guardar Máquina Vending
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>

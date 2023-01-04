@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import passport from 'passport';
 import session from 'express-session';
 import flash from 'connect-flash';
+import favicon from 'serve-favicon';
 
 module.exports = app => {
     //settings
@@ -26,6 +27,7 @@ module.exports = app => {
     app.use(flash());
     app.use(passport.initialize());
     app.use(passport.session());
+    app.use(favicon(path.join(__dirname, '../favicon.ico')));
 
     app.use((req, res, next) => {
         app.locals.signupMessage = req.flash('signupMessage');

@@ -90,12 +90,18 @@ module.exports = app => {
                 let page = (isEmptyOrNull(req.query.page) || isNaN(req.query.page)) ? 1 : Number(req.query.page);
                 let status = (isEmptyOrNull(req.query.status) || isNaN(req.query.status)) ? 1 : Number(req.query.status);
                 let profile = (isEmptyOrNull(req.query.profile)) ? "all" : req.query.profile;
+                let vending = (isEmptyOrNull(req.query.vending)) ? "all" : req.query.vending;
 
                 //Obtener clausulas where
                 let whereFicha = getWhereFichas(status);
                 let whereProfile = getWhereProfiles(profile);
+                let whereVending = getWhereVending(status, vending);
 
-                let urlPages = "?status=" + encodeURIComponent(status) + "&profile=" + encodeURIComponent(profile) + "&page=";
+                let urlPages = "?status=" + encodeURIComponent(status) + "&profile=" + encodeURIComponent(profile);
+                if(status == 0){
+                    urlPages += "&vending=" + encodeURIComponent(vending);
+                }
+                urlPages += "&page=";
 
                 //Parametros de paginacion
                 const resultsPerPage = 20;
@@ -103,7 +109,10 @@ module.exports = app => {
                     where: whereFicha,
                     include: [{
                         model: Perfiles,
-                        where: whereProfile
+                        where: whereProfile, whereVending
+                    }, {
+                        model: Keys,
+                        where: whereVending
                     }]
                 });
                 const numberOfPages = Math.ceil(numberOfResults / resultsPerPage);
@@ -122,7 +131,10 @@ module.exports = app => {
                     offset: startingLimit, limit: resultsPerPage,
                     include: [{
                         model: Perfiles,
-                        where: whereProfile
+                        where: whereProfile, whereVending
+                    }, {
+                        model: Keys,
+                        where: whereVending
                     }]
                 });
                 let iterator = (page - 5) < 1 ? 1 : page - 5;
@@ -135,21 +147,28 @@ module.exports = app => {
                 let estadisticas = await getEstadisticasFichas();
 
                 //Obtener Perfiles para el filtrado
-                let perfiles = await Perfiles.findAll({ where: { status: 1 } });
+                let perfiles = await Perfiles.findAll({ where: { status: 1 }, order: [['price', 'ASC']] });
+
+                //Obtener las máquinas para el filtrado
+                let vendings = (status == 0) ? await Keys.findAll({ where: { status: 1 } }) : null;
 
                 //Mostrar pagina
                 res.render('dashboard', {
                     fichas: fichas,
                     estadisticas: estadisticas,
                     data: {
+                        profile,
+                        perfiles,
+                        vending,
+                        vendings,
+                        status,
+                    },
+                    pagination: {
                         page,
                         iterator,
                         endingLink,
                         numberOfPages,
-                        urlPages,
-                        profile,
-                        status,
-                        perfiles
+                        urlPages
                     }
                 });
             } catch (error) {
@@ -204,6 +223,28 @@ module.exports = app => {
                 break;
         }
         return whereProfile;
+    }
+
+    function getWhereVending(status, vending) {
+        let whereVending;
+        if(status == 0){
+            switch (vending) {
+                case "all":    //Todas
+                    whereVending = {
+                        status: 1
+                    };
+                    break;
+                default:    //La maquina recibida
+                    whereVending = {
+                        name: vending,
+                        status: 1
+                    };
+                    break;
+            }
+        }else{
+            whereVending = null;
+        }
+        return whereVending;
     }
 
     async function getEstadisticasFichas() {

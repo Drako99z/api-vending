@@ -1,0 +1,32 @@
+<%- layout('layout/main.ejs') %>
+
+    <h1 class="mt-4">Editar Perfil</h1>
+
+    <div class="card mt-4">
+        <div class="card-header text-center">
+            <h3>Editar <%= perfil.profile %>
+            </h3>
+        </div>
+        <div class="card-body">
+            <form action="/edit-profile/<%= perfil.id %>" method="POST">
+                <div class="form-group">
+                    <label for="profile" class="form-label mt-2">Cambiar nombre del perfil: </label>
+                    <input type="text" name="profile" class="form-control mt-2" value="<%= perfil.profile %>">
+                </div>
+                <div class="form-group">
+                    <label for="price" class="form-label mt-2">Cambiar el Precio</label>
+                    <input type="number" step=".10" class="form-control mt-2" name="price" value="<%= perfil.price %>">
+                </div>
+                <div class="form-check form-switch mt-4">
+                    <input class="form-check-input rounded-pill" type="checkbox" name="status" id="status" value="true" <%= (perfil.status) ? "checked" : "" %>>
+                    <label class="form-check-label" for="status">Activar o Desactivar perfil</label>
+                </div>
+                <div class="d-grid mt-4 gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary me-md" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="Guardar los cambios en el perfil">
+                        <i class="bi bi-save"></i> Guardar Perfil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>

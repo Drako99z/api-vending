@@ -10,6 +10,7 @@ module.exports = (sequelize, DataType) => {
         user: {
             type: DataType.STRING,
             allowNull: false,
+            unique: true,
             validate: {
                 notEmpty: true
             }
@@ -17,6 +18,7 @@ module.exports = (sequelize, DataType) => {
         password: {
             type: DataType.STRING,
             allowNull: false,
+            unique: true,
             validate: {
                 notEmpty: true
             }
@@ -51,7 +53,8 @@ module.exports = (sequelize, DataType) => {
     });
 
     ficha.associate = (models) => {
-        ficha.belongsTo(models.Perfil);
+        ficha.belongsTo(models.Perfil, { onDelete: 'cascade' });
+        ficha.belongsTo(models.ApiKey, { onDelete: 'cascade' });
     };
 
     return ficha;

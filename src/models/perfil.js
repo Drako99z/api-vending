@@ -10,6 +10,7 @@ module.exports = (sequelize, DataType) => {
         profile: {
             type: DataType.STRING,
             allowNull: false,
+            unique: true,
             validate: {
                 notEmpty: true
             }
@@ -44,7 +45,7 @@ module.exports = (sequelize, DataType) => {
     });
 
     perfil.associate = (models) => {
-        perfil.hasMany(models.Ficha);
+        perfil.hasMany(models.Ficha, { onDelete: 'cascade' });
     };
 
     return perfil;

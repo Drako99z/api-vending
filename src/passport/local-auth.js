@@ -20,20 +20,35 @@ module.exports = app => {
         usernameField: 'user',
         passwordField: 'password',
         passReqToCallback: true
-    }, (req, user, password, done) => {
-        Manager.findOne({ where: { "user": user } }).then(result => {
-            if (result) {
-                return done(null, false, req.flash('signupMessage', 'El usuario ya se encuentra registrado'));
+    }, async (req, user, password, done) => {
+        let passwordConfirm = req.body.passwordConfirm;
+        if (password == passwordConfirm) {
+            try {
+                let count = await Manager.count();
+                if (count == 0) {
+                    Manager.findOne({ where: { "user": user } }).then(result => {
+                        if (result) {
+                            return done(null, false, req.flash('signupMessage', 'El usuario ya se encuentra registrado'));
+                        }
+                        Manager.create({
+                            "user": user,
+                            "password": Manager.encryptPassword(password)
+                        })
+                            .then(result => done(null, result))
+                            .catch(error => {
+                                console.log(error);
+                            });
+                    });
+                }else{
+                    return done(null, false, req.flash('signupMessage', "Solo se permite un usuario administrador"));
+                }
+            } catch (error) {
+                return done(null, false, req.flash('signupMessage', "Error en el servidor: " + error.message));
             }
-            Manager.create({
-                "user": user,
-                "password": Manager.encryptPassword(password)
-            })
-                .then(result => done(null, result))
-                .catch(error => {
-                    console.log(error);
-                });
-        });
+        } else {
+            return done(null, false, req.flash('signupMessage', 'La confirmación de contraseña no coincide'));
+        }
+
     }));
 
     passport.use('local-signin', new LocalStrategy({

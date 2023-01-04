@@ -4,6 +4,8 @@ module.exports = app => {
     const Perfiles = app.db.models.Perfil;
     const Keys = app.db.models.ApiKey;
 
+    var key;
+
     //Continua si esta autenticado
     function isAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
@@ -17,9 +19,10 @@ module.exports = app => {
             if (req.body.fichas != "") {
                 try {
                     //Transformando las cadenas de comandos en fichas
-                    let perfilesGuardados = await Perfiles.findAll();
+                    let perfilesGuardados = await Perfiles.findAll({ where: { status: 1 }});
                     let cadenas = req.body.fichas;
                     let ficha;
+                    let fichaError = false;
                     cadenas = cadenas.split('\n');
 
                     for (const i in cadenas) {
@@ -27,15 +30,22 @@ module.exports = app => {
                         if (ficha != null) {
                             for (const j in perfilesGuardados) {
                                 if (perfilesGuardados[j].profile.includes(ficha.perfil)) {          //si esta presente el perfil encontrado
-                                    let fichaGuardada = await Ficha.create(ficha);                  //Se crea el registro de la ficha
-                                    fichaGuardada.setPerfil(perfilesGuardados[j]);                  //Se asigna la ficha a su perfil
+                                    try{
+                                        let fichaGuardada = await Ficha.create(ficha);                  //Se crea el registro de la ficha
+                                        fichaGuardada.setPerfil(perfilesGuardados[j]);                  //Se asigna la ficha a su perfil
+                                    }catch(error){
+                                        fichaError = true;
+                                    }
                                     break;
                                 }
                             }
                         }
                     }
-
-                    req.flash('dashboardMessage', 'Fichas agregadas exitosamente');
+                    if(!fichaError){
+                        req.flash('dashboardMessage', 'Fichas agregadas exitosamente');
+                    }else{
+                        req.flash('dashboardMessage', 'Fichas agregadas. Algunas fichas no pudieron agregarse correctamente');
+                    }
                     res.redirect('/dashboard');
 
                 } catch (error) {
@@ -87,7 +97,7 @@ module.exports = app => {
                     const { Op } = require("sequelize");
                     let range = req.body.range;
                     let date;
-                    let where;
+                    let where = {where: {}, truncate: true}; //Eliminar Todas las fichas
                     switch (range) {
                         case "1Year":
                             date = moment().subtract(1, 'year');
@@ -102,7 +112,7 @@ module.exports = app => {
                             date = moment().subtract(1, 'month');
                             break;
                     }
-                    if (range != "all") {
+                    if (range != "all" && range != "reset") {//Eliminar las fichas vendidas en el rango de fechas
                         where = {
                             where: {
                                 status: 0,
@@ -111,7 +121,7 @@ module.exports = app => {
                                 }
                             }
                         };
-                    } else {
+                    } else if(range == "all"){//Eliminar todas las fichas vendidas
                         where = {
                             where: {
                                 status: 0
@@ -120,10 +130,12 @@ module.exports = app => {
                     }
                     let eliminadas =  await Ficha.destroy(where);
 
-                    if (range != "all") {
+                    if (range != "all" && range != "reset") {
                         req.flash('configMessage', eliminadas + ' Fichas vendidas antes del ' + date.format('DD/MM/YYYY') + ' eliminadas exitosamente');
-                    } else {
+                    } else if(range == "all"){
                         req.flash('configMessage', eliminadas + ' Fichas vendidas eliminadas exitosamente');
+                    } else{
+                        req.flash('configMessage', eliminadas + ' Fichas eliminadas exitosamente');
                     }
                     res.redirect('/config');
 
@@ -178,8 +190,9 @@ module.exports = app => {
         });
         let object;
         if (ficha != null) {
-            object = { user: ficha.user, password: ficha.password, precio: ficha.Perfil.price }; //Obtener Fciha
-            Ficha.update({ status: 0 }, { where: { id: ficha.id } })   //Descativarla
+            object = { user: ficha.user, password: ficha.password, precio: ficha.Perfil.price }; //Obtener Ficha
+            Ficha.update({ status: 0 }, { where: { id: ficha.id } })   //Desactivarla
+            ficha.setApiKey(key);             //Se asigna la ficha a la maquina que la vendió
         } else {
             object = { msg: "Ninguna ficha encontrada" };
         }
@@ -193,6 +206,7 @@ module.exports = app => {
                 try {
                     let api = await Keys.findOne({ where: { key: req.body.key, status: 1 } })
                     if (api) {
+                        key = api;
                         return next();
                     } else {
                         res.status(401).json({ estatus: "Error", msg: "No autorizado" });
@@ -207,47 +221,5 @@ module.exports = app => {
             res.status(400).json({ estatus: "Error", msg: "Datos enviados de forma incorrecta" });
         }
     };
-
-
-    //Metodos Testing no utilizables
-
-    // app.route('/oneFicha')
-    //     .get((req, res) => {
-    //         Ficha.findAll()
-    //             .then(result => res.json(result))
-    //             .catch(error => {
-    //                 res.status(412).json({ msg: error.message });
-    //             });
-    //     })
-    //     .post((req, res) => {
-    //         Ficha.create(req.body)
-    //             .then(result => res.json(result))
-    //             .catch(error => {
-    //                 res.status(412).json({ msg: error.message });
-    //             });
-    //     });
-
-    // app.route('/fichas/:id')
-    //     .get((req, res) => {
-    //         Ficha.findOne({ where: req.params })
-    //             .then(result => res.json(result))
-    //             .catch(error => {
-    //                 res.status(412).json({ msg: error.message });
-    //             });
-    //     })
-    //     .put((req, res) => {
-    //         Ficha.update(req.body, { where: req.params })
-    //             .then(result => res.sendStatus(204))
-    //             .catch(error => {
-    //                 res.status(412).json({ msg: error.message });
-    //             });
-    //     })
-    //     .delete((req, res) => {
-    //         Ficha.destroy({ where: req.params })
-    //             .then(result => res.sendStatus(204))
-    //             .catch(error => {
-    //                 res.status(412).json({ msg: error.message });
-    //             });
-    //     });
 
 };

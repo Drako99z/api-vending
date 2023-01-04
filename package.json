@@ -25,6 +25,7 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "sequelize": "^6.25.8",
+    "serve-favicon": "^2.5.0",
     "sqlite3": "^5.1.2",
     "string-random": "^0.1.3"
   },

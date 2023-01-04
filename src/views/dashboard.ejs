@@ -7,46 +7,48 @@
         <h3>Estadísticas</h3>
     </div>
     <div class="card-body">
+      <div class="table-responsive">
         <table class="table table-sm">
+          <thead>
+              <tr class="table-dark">
+                  <th colspan="4" scope="col" class="text-center">Generales</th>
+              </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Fichas Disponibles: </th>
+              <td><%= estadisticas.disponiblesTotal %></td>
+              <th scope="row">Fichas Vendidas: </th>
+              <td><%= estadisticas.vendidasTotal %></td>
+            </tr>
+            <tr>
+              <th scope="row">Total de Fichas: </th>
+              <td><%= estadisticas.fichasTotal %></td>
+              <th scope="row">Fichas más Vendidas: </th>
+              <td><%= estadisticas.masVendida %></td>
+            </tr>
             <thead>
-                <tr class="table-dark">
-                    <th colspan="4" scope="col" class="text-center">Generales</th>
-                </tr>
+              <tr class="table-dark">
+                  <th colspan="4" scope="col" class="text-center">Estadisticas por perfil</th>
+              </tr>
+              <tr >
+                  <th scope="col">Perfil</th>
+                  <th scope="col">Fichas Disponibles</th>
+                  <th scope="col">Fichas Vendidas</th>
+                  <th scope="col">Fichas Total</th>
+              </tr>
             </thead>
-            <tbody>
+              <%estadisticas.perfiles.forEach((perfil) => {%>
               <tr>
-                <th scope="row">Fichas Disponibles: </th>
-                <td><%= estadisticas.disponiblesTotal %></td>
-                <th scope="row">Fichas Vendidas: </th>
-                <td><%= estadisticas.vendidasTotal %></td>
-              </tr>
-              <tr>
-                <th scope="row">Total de Fichas: </th>
-                <td><%= estadisticas.fichasTotal %></td>
-                <th scope="row">Fichas más Vendidas: </th>
-                <td><%= estadisticas.masVendida %></td>
-              </tr>
-              <thead>
-                <tr class="table-dark">
-                    <th colspan="4" scope="col" class="text-center">Estadisticas por perfil</th>
+                  <td><%= perfil.perfil + " ($" + perfil.precio + ")"%></td>
+                  <td><%= perfil.estadisticas.disponibles %></td>
+                  <td><%= perfil.estadisticas.vendidas %></td>
+                  <td><%= perfil.estadisticas.total %></td>
                 </tr>
-                <tr >
-                    <th scope="col">Perfil</th>
-                    <th scope="col">Fichas Disponibles</th>
-                    <th scope="col">Fichas Vendidas</th>
-                    <th scope="col">Fichas Total</th>
-                </tr>
-              </thead>
-                <%estadisticas.perfiles.forEach((perfil) => {%>
-                <tr>
-                    <td><%= perfil.perfil + " ($" + perfil.precio + ")"%></td>
-                    <td><%= perfil.estadisticas.disponibles %></td>
-                    <td><%= perfil.estadisticas.vendidas %></td>
-                    <td><%= perfil.estadisticas.total %></td>
-                  </tr>
-                <%});%>
-            </tbody>
-          </table>
+              <%});%>
+          </tbody>
+        </table>
+      </div>
     </div>
 </div>
 
@@ -62,7 +64,7 @@
             </div>
             <div class="col-auto">
                 <div class="d-grid mt-2 gap-2 d-md-flex justify-content-md-end">
-                    <button type="submit" class="btn btn-primary me-md">
+                    <button type="submit" class="btn btn-primary me-md" data-bs-toggle="tooltip" data-bs-placement="right" title="Explorar y guardar nuevas fichas"> 
                         <i class="bi bi-plus-circle"></i>  Aceptar
                     </button>
                 </div>
@@ -81,48 +83,43 @@
           <div class="col-md-4">
             <!-- Select para el estaus de las Fichas -->
             <select class="form-select" aria-label="Default select example" name="status">
-              <%if (data.status == 1) {%>
-                <option selected value="1">Fichas Disponibles</option>
-              <%}else{%>
-                <option value="1">Fichas Disponibles</option>
-              <%}%>
-              <%if (data.status == 0) {%>
-                <option selected value="0">Fichas Vendidas</option>
-              <%}else{%>
-                <option value="0">Fichas Vendidas</option>
-              <%}%>
-              <%if (data.status == -1) {%>
-                <option selected value="-1">Todas las Fichas</option>
-              <%}else{%>
-                <option value="-1">Todas las Fichas</option>
-              <%}%>
+              <option <%= (data.status == 1)? "selected" : "" %> value="1">Fichas Disponibles</option>
+              <option <%= (data.status == 0)? "selected" : "" %> value="0">Fichas Vendidas</option>
+              <option <%= (data.status == -1)? "selected" : "" %> value="-1">Todas las Fichas</option>
             </select>
           </div>
+
+          <%if(data.status == 0){%>
+            <div class="col-md-4">
+              <!-- Select para las máquina vending -->
+              <select class="form-select" aria-label="Default select example" name="vending">
+                <option <%= (data.vending == "all")? "selected" : "" %> value="all">Vendidas por todas las máquinas</option>
+                <%data.vendings.forEach((vending) => {%>
+                  <option <%= (vending.name == data.vending)? "selected" : "" %> ><%= vending.name %> </option>
+                <%});%>
+              </select>
+            </div>
+          <%}%>
 
           <div class="col-md-4">
             <!-- Select para los perfiles de las Fichas -->
             <select class="form-select" aria-label="Default select example" name="profile">
-              <% if(data.profile == "all") {%>
-                <option selected value="all">Todos los perfiles</option>
-              <%}else{%>
-                <option value="all">Todos los perfiles</option>
-              <% } %>   
+              <option <%= (data.profile == "all")? "selected" : "" %> value="all">Todos los perfiles</option>  
               <%data.perfiles.forEach((perfil) => {%>
-                <%if (perfil.profile == data.profile) {%>
-                  <option selected ><%= perfil.profile %> </option>
-                <%}else{%>
-                  <option ><%= perfil.profile %> </option>
-                <%}%>
+                <option <%= (perfil.profile == data.profile)? "selected" : "" %> ><%= perfil.profile %> </option>
               <%});%>
             </select>
           </div>
 
           <div class="col-md-4">
-            <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Filtrar</button>
+            <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="right" title="Filtrar las fichas con los parámetros seleccionados">
+              <i class="bi bi-funnel"></i> Filtrar
+            </button>
           </div>
           
         </form>
 
+        <div class="table-responsive">
           <!-- Tabla de las fichas -->
           <table class="table table-hover table-responsive table-sm">
             <thead>
@@ -139,7 +136,7 @@
               </thead>
               <tbody>
                 <%fichas.forEach((ficha) => {%>
-                    <tr>
+                    <tr class="<%= (ficha.status == 1)? "table-warning" : "table-danger" %>">
                     <th scope="row"><%= ficha.id %></th>
                     <td><%= ficha.Perfil.profile + " ($" + ficha.Perfil.price + ")" %></td>
                     <td><%= ficha.user %></td>
@@ -152,24 +149,25 @@
                 <%});%>
               </tbody>
         </table>
+        </div>
 
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-center">
-            <% if(data.page > 1) {%>
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center flex-wrap">
+            <% if(pagination.page > 1) {%>
             <li class="page-item">
-              <a class="page-link" href="<%=data.urlPages + (data.page - 1)%>">Anterior</a>
+              <a class="page-link" href="<%=pagination.urlPages + (pagination.page - 1)%>">Anterior</a>
             </li>
             <%} %>
-            <% for(let i = data.iterator; i<= data.endingLink; i++) {%>
-              <% if(i === data.page) {%>
-                <li class="page-item active"><a class="page-link" href="<%=data.urlPages + i%>"><%=i%></a></li>
+            <% for(let i = pagination.iterator; i<= pagination.endingLink; i++) {%>
+              <% if(i === pagination.page) {%>
+                <li class="page-item active"><a class="page-link" href="<%=pagination.urlPages + i%>"><%=i%></a></li>
               <% continue; %>
               <%} %>
-              <li class="page-item"><a class="page-link" href="<%=data.urlPages + i%>"><%=i%></a></li>
+              <li class="page-item"><a class="page-link" href="<%=pagination.urlPages + i%>"><%=i%></a></li>
             <%} %>
-            <% if(data.page < data.numberOfPages) {%>
+            <% if(pagination.page < pagination.numberOfPages) {%>
               <li class="page-item">
-                <a class="page-link" href="<%=data.urlPages + (data.page + 1)%>">Siguiente</a>
+                <a class="page-link" href="<%=pagination.urlPages + (pagination.page + 1)%>">Siguiente</a>
               </li>
             <%} %>
           </ul>

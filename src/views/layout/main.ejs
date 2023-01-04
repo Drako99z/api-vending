@@ -18,9 +18,9 @@
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <%if (user) {%>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <%if (user) {%>
                         <li class="nav-item d-md-none ms-2">
                             <a class="nav-link" href="/config"><i class="bi bi-gear"></i> Configuración</a>
                         </li>
@@ -40,16 +40,16 @@
                                         Sesión</a></li>
                             </ul>
                         </li>
-                        <%}%>
                 </ul>
                 <hr class="text-white-50">
             </div>
+            <%}%>
         </div>
     </nav>
 
     <div class="container">
 
-        <!-- Alertas de Inicio de Sesión -->
+        <!-- Alerta de Inicio de Sesión -->
 
         <% if (signupMessage.length> 0) {%>
             <div class="alert alert-dismissible alert-danger">
@@ -58,6 +58,8 @@
                 <strong>Error! </strong> <%= signupMessage%>
             </div>
         <%} %>
+
+        <!-- Alertas de Registro de usuario -->
 
         <% if (signinMessage.length> 0) {%>
             <div class="alert alert-dismissible alert-danger">
