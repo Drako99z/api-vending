@@ -1,5 +1,5 @@
 module.exports = {
-    database: 'bd_apivending',
+   database: 'bd_apivending',
     username: 'api_vending',
     password: 'vendingapi',
     params:{
@@ -9,6 +9,7 @@ module.exports = {
         define: {
             underscore: true
         },
-        operatorsAliases: 0
+        operatorsAliases: 0,
+        timezone: '-06:00'
     }
 }
