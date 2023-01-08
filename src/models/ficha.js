@@ -18,7 +18,6 @@ module.exports = (sequelize, DataType) => {
         password: {
             type: DataType.STRING,
             allowNull: false,
-            unique: true,
             validate: {
                 notEmpty: true
             }
@@ -41,13 +40,13 @@ module.exports = (sequelize, DataType) => {
         createdAt: {
             type: DataType.DATE,
             get() {
-                return moment(this.getDataValue('createdAt')).format('DD/MM/YYYY h:mm:ss a');
+                return moment(this.getDataValue('createdAt')).local().format('DD/MM/YYYY h:mm:ss a');
             }
         },
         updatedAt: {
             type: DataType.DATE,
             get() {
-                return moment(this.getDataValue('updatedAt')).format('DD/MM/YYYY h:mm:ss a');
+                return moment(this.getDataValue('updatedAt')).local().format('DD/MM/YYYY h:mm:ss a');
             }
         }
     });
