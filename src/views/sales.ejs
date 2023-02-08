@@ -1,0 +1,153 @@
+<%- layout('layout/main.ejs') %>
+
+  <h1 class="mt-4">Ventas</h1>
+
+  <div class="card mt-4">
+    <div class="card-header text-center">
+      <h3>Ventas Totales</h3>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr class="table-dark">
+              <th colspan="4" scope="col" class="text-center">Generales</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Fichas Vendidas: </th>
+              <td>
+                <%= ventas.vendidasTotal %>
+              </td>
+              <th scope="row">Total Acumulado: </th>
+              <td>$<%= ventas.acumuladoTotal %>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Fichas Disponibles: </th>
+              <td>
+                <%= ventas.disponiblesTotal %>
+              </td>
+              <th scope="row">Máquina con más Ventas: </th>
+              <td>
+                <%= ventas.masVentasMaquina %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-header text-center">
+      <h3>Ventas de las Máquinas Vending</h3>
+    </div>
+    <div class="card-body">
+
+      <form class="row g-3">
+        <div class="col-md-4">
+          <select class="form-select" name="range" id="selectRange" onchange="disableSelectDate()">
+            <option <%=(ventas.rangoVentas=="today")? "selected" : "" %> selected value="today">Ventas de hoy</option>
+            <option <%=(ventas.rangoVentas=="yesterday")? "selected" : "" %> value="yesterday">Ventas de ayer</option>
+            <option <%=(ventas.rangoVentas=="week")? "selected" : "" %> value="week">Ventas de la semana</option>
+            <option <%=(ventas.rangoVentas=="lastWeek")? "selected" : "" %> value="lastWeek">Ventas de la semana pasada</option>
+            <option <%=(ventas.rangoVentas=="month")? "selected" : "" %> value="month">Ventas del mes</option>
+            <option <%=(ventas.rangoVentas=="lastMonth")? "selected" : "" %> value="lastMonth">Ventas del mes pasado</option>
+            <option <%=(ventas.rangoVentas=="custom")? "selected" : "" %> value="custom">Rango de fechas personalizado</option>
+            <option <%=(ventas.rangoVentas=="all")? "selected" : "" %> value="all">Todas las ventas</option>
+          </select>
+        </div>
+
+        <div class="col-auto">
+          <label for="fichas" class="visually-hidden">Fecha Inicial</label>
+          <input type="date" class="form-control" name="startDate" id="fechaInicial" 
+           <%=(ventas.rangoVentas=="custom")? "value=" + ventas.fechaInicial : "style=visibility:hidden; disabled" %> />
+        </div>
+        <div class="col-auto">
+          <label for="fichas" class="visually-hidden">Fecha Final</label>
+          <input type="date" class="form-control" name="endDate" id="fechaFinal"
+          <%=(ventas.rangoVentas=="custom")? "value=" + ventas.fechaFinal : "style=visibility:hidden; disabled" %> />
+        </div>
+
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="right"
+            title="Filtrar las ventas con los parámetros seleccionados">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+        </div>
+      </form>
+      <br>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr class="table-dark">
+              <th colspan="4" scope="col" class="text-center">Ventas por Máquina</th>
+            </tr>
+            <tr>
+              <th scope="col" class="text-center">Máquina</th>
+              <th scope="col">Perfiles</th>
+              <th scope="col">Fichas Vendidas</th>
+              <th scope="col">Saldo Acumulado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%ventas.ventasForMaquina.forEach((maquina)=> {%>
+              <tr>
+                <td class="text-center align-middle" <%=(maquina.venta.length !=0) ? "rowspan=" + maquina.venta.length
+                  : "" %> ><%= maquina.maquina %>
+                </td>
+                <%if(maquina.venta.length> 0){%>
+                  <td>
+                    <%= maquina.venta[0].perfil + " ($" + maquina.venta[0].precio + ")" %>
+                  </td>
+                  <td>
+                    <%= maquina.venta[0].vendidas %>
+                  </td>
+                  <td>$<%= maquina.venta[0].saldoAcumulado %>
+                  </td>
+                  <%} %>
+              </tr>
+              <%for(let i=1; i<maquina.venta.length; i++){%>
+                <tr>
+                  <td>
+                    <%= maquina.venta[i].perfil + " ($" + maquina.venta[i].precio + ")" %>
+                  </td>
+                  <td>
+                    <%= maquina.venta[i].vendidas %>
+                  </td>
+                  <td>$<%= maquina.venta[i].saldoAcumulado %>
+                  </td>
+                </tr>
+                <%}%>
+                  <tr class="table-primary">
+                    <td colspan="2" class="text-center">TOTAL DE LA MÁQUINA</td>
+                    <td>
+                      <%= maquina.ventaTotal %>
+                    </td>
+                    <td>$<%= maquina.acumuladoTotal %>
+                    </td>
+                  </tr>
+                  <%});%>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function disableSelectDate() {
+      if (document.getElementById("selectRange").value != "custom") {
+        document.getElementById("fechaInicial").disabled = true;
+        document.getElementById("fechaInicial").style.visibility = 'hidden';
+        document.getElementById("fechaFinal").disabled = true;
+        document.getElementById("fechaFinal").style.visibility = 'hidden';
+      } else {
+        document.getElementById("fechaInicial").disabled = false;
+        document.getElementById("fechaInicial").style.visibility = 'visible';
+        document.getElementById("fechaFinal").disabled = false;
+        document.getElementById("fechaFinal").style.visibility = 'visible';
+      }
+    }
+  </script>

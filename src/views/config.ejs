@@ -13,8 +13,9 @@
                     <input type="email" name="user" class="form-control mt-2" value="<%= user.user %>">
                 </div>
                 <div class="d-grid mt-4 gap-2 d-md-flex justify-content-md-end">
-                    <button type="submit" class="btn btn-primary me-md" data-bs-toggle="tooltip" data-bs-placement="right" title="Guardar los cambios en el usuario">
-                        <i class="bi bi-save"></i>  Guardar Usuario
+                    <button type="submit" class="btn btn-primary me-md" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="Guardar los cambios en el usuario">
+                        <i class="bi bi-save"></i> Guardar Usuario
                     </button>
                 </div>
             </form>
@@ -40,8 +41,9 @@
                     <input type="password" name="newPasswordConfirm" class="form-control mt-2">
                 </div>
                 <div class="d-grid mt-4 gap-2 d-md-flex justify-content-md-end">
-                    <button type="submit" class="btn btn-primary me-md" data-bs-toggle="tooltip" data-bs-placement="right" title="Guardar nueva contraseña"> 
-                        <i class="bi bi-key"></i>  Cambiar Contraseña
+                    <button type="submit" class="btn btn-primary me-md" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="Guardar nueva contraseña">
+                        <i class="bi bi-key"></i> Cambiar Contraseña
                     </button>
                 </div>
             </form>
@@ -55,57 +57,77 @@
         <div class="card-body">
             <form action="/addProfile" method="POST" class="row g-3">
                 <div class="col-md-4">
-                  <label for="profile" class="visually-hidden">Nombre del Perfil</label>
-                  <input type="text" class="form-control" id="profile" name="profile" placeholder="Nombre del Perfil">
+                    <label for="profile" class="visually-hidden">Nombre del Perfil</label>
+                    <input type="text" class="form-control" id="profile" name="profile" placeholder="Nombre del Perfil">
                 </div>
                 <div class="col-md-4">
-                  <label for="price" class="visually-hidden">Precio</label>
-                  <input type="number" step=".10" class="form-control" id="price" name="price" placeholder="Precio">
+                    <label for="price" class="visually-hidden">Precio</label>
+                    <input type="number" step=".10" class="form-control" id="price" name="price" placeholder="Precio">
                 </div>
                 <div class="col-md-4">
-                  <button type="submit" class="btn btn-primary mb-3 me-md" data-bs-toggle="tooltip" data-bs-placement="right" title="Guardar nuevo perfil">
-                    <i class="bi bi-plus-circle"></i>  Guardar Perfil
-                </button>
+                    <button type="submit" class="btn btn-primary mb-3 me-md" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="Guardar nuevo perfil">
+                        <i class="bi bi-plus-circle"></i> Guardar Perfil
+                    </button>
                 </div>
-              </form>
-              <div class="table-responsive">
+            </form>
+            <div class="table-responsive">
                 <table class="table table-hover table-responsive table-sm">
                     <thead>
                         <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">Nombre</th>
-                          <th scope="col">Precio ($)</th>
-                          <th scope="col">Estatus</th>
-                          <th scope="col">Fecha de Creación</th>
-                          <th scope="col">Última Modificación</th>
-                          <th scope="col">Editar</th>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Precio ($)</th>
+                            <th scope="col">Estatus</th>
+                            <th scope="col">Fecha de Creación</th>
+                            <th scope="col">Última Modificación</th>
+                            <th scope="col">Editar</th>
                         </tr>
-                      </thead>
-                      <tbody>
-                        <%profiles.forEach((perfil) => {%>
+                    </thead>
+                    <tbody>
+                        <%profiles.forEach((perfil)=> {%>
                             <tr>
-                            <th scope="row"><%= perfil.id %></th>
-                            <td><%= perfil.profile %></td>
-                            <td><%= perfil.price %></td>
-                            <td><%= (perfil.status)? "Activado" : "Desactivado" %></td>
-                            <td><%= perfil.createdAt %></td>
-                            <td><%= perfil.updatedAt %></td>
-                            <td>
-                                <a href="/change-profile-status/<%= perfil.id %>" class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="right" title="Activar o desactivar perfil">
-                                    <i class="bi <%= (perfil.status) ? "bi-check-square-fill" : "bi-check-square" %>"></i>
-                                </a>
-                                <a href="/edit-profile/<%= perfil.id %>" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="right" title="Editar el perfil seleccionado">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a onclick="confirmarEliminarPerfil(<%= perfil.id %>)" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="Eliminar el perfil seleccionado">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
+                                <th scope="row">
+                                    <%= perfil.id %>
+                                </th>
+                                <td>
+                                    <%= perfil.profile %>
+                                </td>
+                                <td>
+                                    <%= perfil.price %>
+                                </td>
+                                <td>
+                                    <%= (perfil.status)? "Activado" : "Desactivado" %>
+                                </td>
+                                <td>
+                                    <%= perfil.createdAt %>
+                                </td>
+                                <td>
+                                    <%= perfil.updatedAt %>
+                                </td>
+                                <td>
+                                    <a href="/change-profile-status/<%= perfil.id %>" class="btn btn-info"
+                                        data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="Activar o desactivar perfil">
+                                        <i class="bi <%= (perfil.status) ? " bi-check-square-fill" : "bi-check-square"
+                                            %>"></i>
+                                    </a>
+                                    <a href="/edit-profile/<%= perfil.id %>" class="btn btn-warning"
+                                        data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="Editar el perfil seleccionado">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a onclick="confirmarEliminarPerfil(<%= perfil.id %>)" class="btn btn-danger"
+                                        data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="Eliminar el perfil seleccionado">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
                             </tr>
-                        <%});%>
-                      </tbody>
+                            <%});%>
+                    </tbody>
                 </table>
-              </div>
+            </div>
         </div>
     </div>
 
@@ -120,8 +142,9 @@
                     <input type="text" class="form-control" id="profile" name="name" placeholder="Nombre de la máquina">
                 </div>
                 <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary mb-3 me-md" data-bs-toggle="tooltip" data-bs-placement="right" title="Guardar nueva máquina vending">
-                        <i class="bi bi-plus-circle"></i>  Generar Nueva Api-Key
+                    <button type="submit" class="btn btn-primary mb-3 me-md" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="Guardar nueva máquina vending">
+                        <i class="bi bi-plus-circle"></i> Generar Nueva Api-Key
                     </button>
                 </div>
             </form>
@@ -129,38 +152,57 @@
                 <table class="table table-hover table-responsive table-sm">
                     <thead>
                         <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">Nombre</th>
-                          <th scope="col">Api-Key</th>
-                          <th scope="col">Estatus</th>
-                          <th scope="col">Fecha de Creación</th>
-                          <th scope="col">Última Modificación</th>
-                          <th scope="col">Editar</th>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Api-Key</th>
+                            <th scope="col">Estatus</th>
+                            <th scope="col">Fecha de Creación</th>
+                            <th scope="col">Última Modificación</th>
+                            <th scope="col">Editar</th>
                         </tr>
-                      </thead>
-                      <tbody>
-                        <%keys.forEach((key) => {%>
+                    </thead>
+                    <tbody>
+                        <%keys.forEach((key)=> {%>
                             <tr>
-                            <th scope="row"><%= key.id %></th>
-                            <td><%= key.name %></td>
-                            <td><%= key.key %></td>
-                            <td><%= (key.status)? "Activada" : "Desactivada" %></td>
-                            <td><%= key.createdAt %></td>
-                            <td><%= key.updatedAt %></td>
-                            <td>
-                                <a href="/change-key-status/<%= key.id %>" class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="right" title="Activar o desactivar máquina vending">
-                                    <i class="bi <%= (key.status) ? "bi-check-square-fill" : "bi-check-square" %>"></i>
-                                </a>
-                                <a href="/edit-vending/<%= key.id %>" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="right" title="Editar la máquina seleccionada">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a onclick="confirmarEliminarMaquina(<%= key.id %>)" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="right" title="Eliminar la maquina vending seleccionada">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
+                                <th scope="row">
+                                    <%= key.id %>
+                                </th>
+                                <td>
+                                    <%= key.name %>
+                                </td>
+                                <td>
+                                    <%= key.key %>
+                                </td>
+                                <td>
+                                    <%= (key.status)? "Activada" : "Desactivada" %>
+                                </td>
+                                <td>
+                                    <%= key.createdAt %>
+                                </td>
+                                <td>
+                                    <%= key.updatedAt %>
+                                </td>
+                                <td>
+                                    <a href="/change-key-status/<%= key.id %>" class="btn btn-info"
+                                        data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="Activar o desactivar máquina vending">
+                                        <i class="bi <%= (key.status) ? " bi-check-square-fill" : "bi-check-square"
+                                            %>"></i>
+                                    </a>
+                                    <a href="/edit-vending/<%= key.id %>" class="btn btn-warning"
+                                        data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="Editar la máquina seleccionada">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a onclick="confirmarEliminarMaquina(<%= key.id %>)" class="btn btn-danger"
+                                        data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="Eliminar la maquina vending seleccionada">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
                             </tr>
-                        <%});%>
-                      </tbody>
+                            <%});%>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -171,59 +213,112 @@
             <h3>Limpiar Historial</h3>
         </div>
         <div class="card-body">
-            <form action="/clearHistory" method="POST" class="row g-3">
+            <form action="/clearHistory" method="POST" class="row g-3" id="form-delete-history">
                 <div class="col-md-4">
-                    <select class="form-select" aria-label="Default select example" name="range">
+                    <select class="form-select" name="range" id="selectRange" onchange="disableSelectVending()">
                         <option selected value="1Year">Mayor a un año</option>
                         <option value="6Months">Mayor a 6 meses</option>
                         <option value="3Months">Mayor a 3 meses</option>
                         <option value="1Month">Mayor a un mes</option>
                         <option value="all">Todas las vendidas</option>
                         <option value="reset">Todas las fichas - Reiniciar</option>
-                      </select>
+                    </select>
                 </div>
                 <div class="col-md-4">
-                  <button type="submit" class="btn btn-danger mb-3 me-md" data-bs-toggle="tooltip" data-bs-placement="right" title="Eliminar las fichas en el rango seleccionado">
-                    <i class="bi bi-trash"></i>  Eliminar Fichas Vendidas
-                </button>
+                    <!-- Select para las máquina vending -->
+                    <select class="form-select" name="vending" id="selectVending">
+                        <option value="all">Vendidas por todas las máquinas</option>
+                        <%keys.forEach((vending)=> {%>
+                            <option>
+                                <%= vending.name %>
+                            </option>
+                            <%});%>
+                    </select>
                 </div>
-              </form>
+                <div class="col-md-4">
+                    <label for="passwordRoot" class="visually-hidden">Contraseña Root</label>
+                    <input type="password" class="form-control" name="passwordRoot" placeholder="Contraseña Root">
+                </div>
+            </form>
+            <br>
+            <div class="col-md-4">
+                <button class="btn btn-danger mb-3 me-md" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="Eliminar las fichas en el rango seleccionado" onclick="confirmarEliminarHistorial()">
+                    <i class="bi bi-trash"></i> Eliminar Fichas Vendidas
+                </button>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        function confirmarEliminarPerfil(id){
+        function confirmarEliminarPerfil(id) {
             Swal.fire({
-            title: '¿Está seguro de eliminar este perfil?',
-            text: "Esta acción no es reversible y eliminará también las fichas relacionadas con este",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Eliminar',
-            cancelButtonText: 'Cancelar'
+                title: '¿Está seguro de eliminar este perfil?',
+                icon: 'warning',
+                html: '<label class="swal2-label">Esta acción no es reversible y eliminará también las fichas relacionadas con este. Para continuar, debe ingresar la contraseña root<label>' +
+                    '<form id="form-delete-perfil" method="POST" action="/delete-profile/'+ id + '">' +
+                    '<input id="passwordRoot" name="password" type="password" class="swal2-input" placeholder="Contraseña root">' + 
+                    '</form>',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
             }).then((result) => {
-            if (result.isConfirmed) {
-                window.location = "/delete-profile/" + id;
-            }
+                if (result.isConfirmed) {
+                    //window.location = "/delete-profile/" + id;
+                    document.getElementById("form-delete-perfil").submit();
+                }
             })
         }
 
-        function confirmarEliminarMaquina(id){
+        function confirmarEliminarMaquina(id) {
             Swal.fire({
-            title: '¿Está seguro de eliminar esta máquina vending?',
-            text: "Esta acción no es reversible y eliminará también las fichas relacionadas con esta",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Eliminar',
-            cancelButtonText: 'Cancelar'
+                title: '¿Está seguro de eliminar esta máquina vending?',
+                icon: 'warning',
+                html: '<label class="swal2-label">Esta acción no es reversible y eliminará también las fichas relacionadas con esta. Para continuar, debe ingresar la contraseña root<label>' +
+                    '<form id="form-delete-maquina" method="POST" action="/delete-vending/'+ id + '">' +
+                    '<input id="passwordRoot" name="password" type="password" class="swal2-input" placeholder="Contraseña root">' + 
+                    '</form>',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
             }).then((result) => {
-            if (result.isConfirmed) {
-                window.location = "/delete-vending/" + id;
-            }
+                if (result.isConfirmed) {
+                    //window.location = "/delete-vending/" + id;
+                    document.getElementById("form-delete-maquina").submit();
+                }
             })
+        }
+
+        function confirmarEliminarHistorial() {
+            Swal.fire({
+                title: '¿Está seguro de eliminar el historial?',
+                text: 'Esta acción no es reversible y no podrá recuperar las fichas eliminadas. Esto no afectará a los perfiles ni máquina vending registradas',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("form-delete-history").submit();
+                }
+            })
+        }
+
+        function disableSelectVending() {
+            if (document.getElementById("selectRange").value == "reset") {
+                document.getElementById("selectVending").disabled = true;
+                document.getElementById("selectVending").style.visibility = 'hidden';
+            } else {
+                document.getElementById("selectVending").disabled = false;
+                document.getElementById("selectVending").style.visibility = 'visible';
+            }
         }
     </script>

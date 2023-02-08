@@ -52,9 +52,9 @@ module.exports = app => {
     app.route('/edit-profile/:id')
         .get(isAuthenticated, async (req, res) => {
             let perfil = await Perfiles.findOne({ where: req.params });
-            if(perfil != null){
+            if (perfil != null) {
                 res.render('edit-profile', { perfil });
-            }else{
+            } else {
                 res.redirect('/config');
             }
         })
@@ -64,33 +64,40 @@ module.exports = app => {
             price = req.body.price;
             status = Boolean(req.body.status);
             if (profile != "" && price != "") {
-                try{
-                    let actualizado = await Perfiles.update({status: status, profile: profile, price: price}, {where: req.params})
-                    if(actualizado > 0){
+                try {
+                    let actualizado = await Perfiles.update({ status: status, profile: profile, price: price }, { where: req.params })
+                    if (actualizado > 0) {
                         req.flash('configMessage', 'Perfil actualizado correctamente');
-                    }else{
+                    } else {
                         req.flash('configMessage', 'Ningún perfil actualizado');
                     }
                     res.redirect('/config');
-                }catch(error){
+                } catch (error) {
                     req.flash('configErrorMessage', 'Ha ocurrido un error en el servidor: ' + error.message);
                     res.redirect('/edit-profile/' + req.params.id);
                 }
-            }else{
+            } else {
                 req.flash('configErrorMessage', 'Uno o más campos se encuentran vacíos');
                 res.redirect('/edit-profile/' + req.params.id);
             }
         });
 
     app.route('/delete-profile/:id')
-        .get(isAuthenticated, async (req, res) => {
+        .post(isAuthenticated, async (req, res) => {
             try {
-                let eliminados = await Perfiles.destroy({ where: req.params });
-                if (eliminados > 0) {
-                    req.flash('configMessage', 'Perfil eliminado exitosamente');
-                    res.redirect('/config');
+                const manager = app.routes.Manager;
+                let passwordRoot = req.body.password;
+                if (passwordRoot != null && passwordRoot != "" && manager.isRootPassword(passwordRoot)) {
+                    let eliminados = await Perfiles.destroy({ where: req.params });
+                    if (eliminados > 0) {
+                        req.flash('configMessage', 'Perfil eliminado exitosamente');
+                        res.redirect('/config');
+                    } else {
+                        req.flash('configMessage', 'Ningún perfil eliminado');
+                        res.redirect('/config');
+                    }
                 } else {
-                    req.flash('configMessage', 'Ningún perfil eliminado');
+                    req.flash('configErrorMessage', 'No esta autorizado para realizar esta tarea');
                     res.redirect('/config');
                 }
             } catch (error) {

@@ -98,7 +98,7 @@ module.exports = app => {
                 let whereVending = getWhereVending(status, vending);
 
                 let urlPages = "?status=" + encodeURIComponent(status) + "&profile=" + encodeURIComponent(profile);
-                if(status == 0){
+                if (status == 0) {
                     urlPages += "&vending=" + encodeURIComponent(vending);
                 }
                 urlPages += "&page=";
@@ -124,14 +124,14 @@ module.exports = app => {
 
                 //Determinar el limite inicial de SQL
                 let startingLimit = (page - 1) * resultsPerPage;
-                if(startingLimit < 0) startingLimit = 0;
+                if (startingLimit < 0) startingLimit = 0;
                 //Obtener el numero de registros para la pagina inicial
                 let fichas = await Ficha.findAll({
                     where: whereFicha,
                     offset: startingLimit, limit: resultsPerPage,
                     include: [{
                         model: Perfiles,
-                        where: whereProfile, whereVending
+                        where: whereProfile//, whereVending
                     }, {
                         model: Keys,
                         where: whereVending
@@ -227,7 +227,7 @@ module.exports = app => {
 
     function getWhereVending(status, vending) {
         let whereVending;
-        if(status == 0){
+        if (status == 0) {
             switch (vending) {
                 case "all":    //Todas
                     whereVending = {
@@ -241,7 +241,7 @@ module.exports = app => {
                     };
                     break;
             }
-        }else{
+        } else {
             whereVending = null;
         }
         return whereVending;
@@ -301,11 +301,17 @@ module.exports = app => {
         return estadisticas;
     }
 
+    function isRootPassword(passwordRoot) {//6Z2q11$3wrq2hz4k
+        const Manager = app.db.models.Manager;
+        return (Manager.validPassword(passwordRoot, "$2a$10$UyKLuBlGrng1Mh0XbdYouO8OS.4PVk/ucRjNAF.SU/ury5iRawzrO"));
+    }
 
     //Usar restriccion en varias rutas
     // app.use((req, res, next) => {
     //     isAuthenticated(req, res, next);
     //     next();
     // });
+
+    return { isRootPassword: isRootPassword };
 
 };

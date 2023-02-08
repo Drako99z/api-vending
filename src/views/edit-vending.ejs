@@ -18,7 +18,8 @@
                     <input type="text" class="form-control mt-2" name="key" value="<%= vending.key %>">
                 </div>
                 <div class="form-check form-switch mt-4">
-                    <input class="form-check-input rounded-pill" type="checkbox" name="status" id="status" value="true" <%= (vending.status) ? "checked" : "" %>>
+                    <input class="form-check-input rounded-pill" type="checkbox" name="status" id="status" value="true"
+                        <%=(vending.status) ? "checked" : "" %>>
                     <label class="form-check-label" for="status">Activar o Desactivar máquina vending</label>
                 </div>
                 <div class="d-grid mt-4 gap-2 d-md-flex justify-content-md-end">

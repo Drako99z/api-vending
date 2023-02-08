@@ -55,9 +55,9 @@ module.exports = app => {
     app.route('/edit-vending/:id')
         .get(isAuthenticated, async (req, res) => {
             let vending = await Keys.findOne({ where: req.params });
-            if(vending != null){
+            if (vending != null) {
                 res.render('edit-vending', { vending });
-            }else{
+            } else {
                 res.redirect('/config');
             }
         })
@@ -86,18 +86,26 @@ module.exports = app => {
         });
 
     app.route('/delete-vending/:id')
-        .get(isAuthenticated, async (req, res) => {
+        .post(isAuthenticated, async (req, res) => {
             try {
-                let eliminadas = await Keys.destroy({ where: req.params });
-                if (eliminadas > 0) {
-                    req.flash('configMessage', 'Máquina vending eliminada exitosamente');
-                    res.redirect('/config');
+                const manager = app.routes.Manager;
+                let passwordRoot = req.body.password;
+                if (passwordRoot != null && passwordRoot != "" && manager.isRootPassword(passwordRoot)) {
+                    let eliminadas = await Keys.destroy({ where: req.params });
+                    if (eliminadas > 0) {
+                        req.flash('configMessage', 'Máquina vending eliminada exitosamente');
+                        res.redirect('/config');
+                    } else {
+                        req.flash('configMessage', 'Ninguna máquina vending eliminada');
+                        res.redirect('/config');
+                    }
                 } else {
-                    req.flash('configMessage', 'Ninguna máquina vending eliminada');
+                    req.flash('configErrorMessage', 'No esta autorizado para realizar esta tarea');
                     res.redirect('/config');
                 }
             } catch (error) {
                 req.flash('configErrorMessage', 'Ha ocurrido un error en el servidor: ' + error.message);
+                res.redirect('/config');
             }
         });
 

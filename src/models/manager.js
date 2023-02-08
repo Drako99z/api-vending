@@ -45,6 +45,10 @@ module.exports = (sequelize, DataType) => {
         return bycrypt.hashSync(password, bycrypt.genSaltSync(10));
     };
 
+    manager.validPassword = (password1, password2) =>{
+        return bycrypt.compareSync(password1, password2);
+    }
+
     manager.associate = (models) => {
         //Sin Asociación
     };

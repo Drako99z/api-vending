@@ -26,20 +26,13 @@ module.exports = app => {
             try {
                 let count = await Manager.count();
                 if (count == 0) {
-                    Manager.findOne({ where: { "user": user } }).then(result => {
-                        if (result) {
-                            return done(null, false, req.flash('signupMessage', 'El usuario ya se encuentra registrado'));
-                        }
-                        Manager.create({
-                            "user": user,
-                            "password": Manager.encryptPassword(password)
-                        })
-                            .then(result => done(null, result))
-                            .catch(error => {
-                                console.log(error);
-                            });
-                    });
-                }else{
+                    let result = await Manager.findOne({ where: { "user": user } });
+                    if (result) {
+                        return done(null, false, req.flash('signupMessage', 'El usuario ya se encuentra registrado'));
+                    }
+                    result = await Manager.create({ "user": user, "password": Manager.encryptPassword(password) });
+                    result => done(null, result);
+                } else {
                     return done(null, false, req.flash('signupMessage', "Solo se permite un usuario administrador"));
                 }
             } catch (error) {

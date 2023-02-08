@@ -18,7 +18,8 @@
                     <input type="number" step=".10" class="form-control mt-2" name="price" value="<%= perfil.price %>">
                 </div>
                 <div class="form-check form-switch mt-4">
-                    <input class="form-check-input rounded-pill" type="checkbox" name="status" id="status" value="true" <%= (perfil.status) ? "checked" : "" %>>
+                    <input class="form-check-input rounded-pill" type="checkbox" name="status" id="status" value="true"
+                        <%=(perfil.status) ? "checked" : "" %>>
                     <label class="form-check-label" for="status">Activar o Desactivar perfil</label>
                 </div>
                 <div class="d-grid mt-4 gap-2 d-md-flex justify-content-md-end">
